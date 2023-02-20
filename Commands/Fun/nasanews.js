@@ -5,8 +5,8 @@ const { getRoleColor } = require('../../Utils/getRoleColor');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('define')
-    .setDescription(`Looks up a term in the dictionary.`)
+    .setName('nasanews')
+    .setDescription(`Looks up an astronomy-related term on NASA's Website and returns a fact about it.`)
     .addStringOption((option) => option
       .setName('term')
       .setDescription('The term you want to search.')
@@ -14,31 +14,19 @@ module.exports = {
     ),
   async execute(interaction) {
     const term = interaction.options.getString('term');
-    const response = await fetch(`http://api.urbandictionary.com/v0/define?term=${term}`);
+    const response = await fetch(`https://images-api.nasa.gov/search?q=${term}`);
     const data = await response.json();
-    if (!data.list[0] || !data.list[0].definition) {
+    if (!data.collection.items[0].data[0].description) {
       return interaction.reply({ content: `Couldn't find any results for ${'`' + term + '`'}`, ephemeral: true });
     }
 
-    const definition = data.list[0].definition
-      .split('[')
-      .join('')
-      .split(']')
-      .join('');
-    const example = data.list[0].example
-      .split('[')
-      .join('')
-      .split(']')
-      .join('');
     let color = getRoleColor(interaction.guild);
-    const defineEmbed = new MessageEmbed()
+    const nasaSearchEmbed = new MessageEmbed()
       .setColor(color)
-      .setTitle(`What does ${term} mean?`)
-      .addFields(
-        { name: 'Definition', value: '```' + definition + '```' },
-        { name: 'Example', value: '```' + (example || 'N/A') + '```' }
-      )
+      .setTitle(data.collection.items[0].data[0].title)
+      .setDescription(data.collection.items[0].data[0].description)
+      .setImage(data.collection.items[0].links[0].href.split(' ').join('%20'))
       .setTimestamp();
-    interaction.reply({ embeds: [defineEmbed] });
+    interaction.reply({ embeds: [nasaSearchEmbed] });
   }
 }
