@@ -1,4 +1,4 @@
-# Focus
+# SLEEYAX
 *Revamp your Discord server. Moderation, role management, logging and more, all in an easy to use, feature rich and bug free Discord bot!*
 > It's a really useful and good bot. Easy to manage. I would recommend everyone to add this to their respective servers.
 
